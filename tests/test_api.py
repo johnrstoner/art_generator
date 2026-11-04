@@ -61,3 +61,16 @@ def test_get_object_returns_object(monkeypatch):
     assert obj["title"] == "One-dollar Liberty Head Coin"
     assert obj["artistDisplayName"] == "James Barton Longacre"
     assert obj["objectDate"] == "1853"
+
+def test_get_object_raises_on_http_error(monkeypatch):
+    class ErrorResponse:
+            def raise_for_status(self):
+                raise requests.HTTPError("HTTP Error")
+    
+    def mock_get(*args, **kwargs):
+        return ErrorResponse()
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+    with pytest.raises(requests.HTTPError):
+        api.get_object(OBJECT_ID)
