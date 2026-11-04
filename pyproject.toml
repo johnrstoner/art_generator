@@ -11,6 +11,8 @@ requires-python = ">=3.12"
 dependencies = [
     "requests>=2.34",
 ]
+[project.optional-dependencies]
+dev = ["pytest>=9.2"]
 
 [project.scripts]
 art-generator = "art_generator.cli:main"
