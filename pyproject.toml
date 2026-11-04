@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "art-generator"
+version = "0.1.0"
+description = "Fetch artworks from the Met Museum API and store them in SQLite"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.34",
+]
+[project.optional-dependencies]
+dev = ["pytest>=9.2"]
+
+[project.scripts]
+art-generator = "art_generator.cli:main"
