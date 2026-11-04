@@ -10,5 +10,11 @@ def get_object_ids() -> list[int]:
     response = requests.get(f"{BASE_URL}/objects", timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     return response.json()["objectIDs"]
-    
+
+def get_object(id: int) -> dict:
+    # Fetches a work based on its id. Can fetch non-publicly available artwork, check the 'isPublicDomain' (bool) field of the returned dictionary
+    response = requests.get(f"{BASE_URL}/objects/{id}", timeout=REQUEST_TIMEOUT)
+    response.raise_for_status()
+    return response.json()
+
 
