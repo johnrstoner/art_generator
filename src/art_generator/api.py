@@ -6,7 +6,7 @@ REQUEST_TIMEOUT = 10 # in seconds
 
 
 def get_object_ids() -> list[int]:
-    # Fetches a list of all object ids in the museum's database
+    # Fetches a list of all object ids of publicly available works in the museum's database
     response = requests.get(f"{BASE_URL}/objects", timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     return response.json()["objectIDs"]
