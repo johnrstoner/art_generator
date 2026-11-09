@@ -1,11 +1,7 @@
-import json
-from pathlib import Path
 import requests
 import pytest
 import art_generator.api as api
 
-DATA_DIR = Path(__file__).parent / "data"
-OBJECT_ID = 1
 
 def test_get_object_ids_returns_ids(monkeypatch):
     mock_ids = [1, 2, 3]
@@ -37,24 +33,21 @@ def test_get_object_ids_raises_on_http_error(monkeypatch):
     with pytest.raises(requests.HTTPError):
         api.get_object_ids()
 
-def test_get_object_returns_object(monkeypatch):
-    with open(DATA_DIR / f"object_{OBJECT_ID}.json") as file:
-        mock_object = json.load(file)
-
+def test_get_object_returns_object(monkeypatch, sample_object: dict, object_id: int):
 
     class MockResponse:
         def raise_for_status(self):
             pass
 
         def json(self):
-            return mock_object
+            return sample_object
 
     def mock_get(*args, **kwargs):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
 
-    obj = api.get_object(OBJECT_ID)
+    obj = api.get_object(object_id)
     assert obj["objectID"] == 1
     assert obj["isPublicDomain"] == False
     assert obj["primaryImage"] == ""
@@ -62,7 +55,7 @@ def test_get_object_returns_object(monkeypatch):
     assert obj["artistDisplayName"] == "James Barton Longacre"
     assert obj["objectDate"] == "1853"
 
-def test_get_object_raises_on_http_error(monkeypatch):
+def test_get_object_raises_on_http_error(monkeypatch, object_id: int):
     class ErrorResponse:
             def raise_for_status(self):
                 raise requests.HTTPError("HTTP Error")
@@ -73,4 +66,4 @@ def test_get_object_raises_on_http_error(monkeypatch):
     monkeypatch.setattr(requests, "get", mock_get)
 
     with pytest.raises(requests.HTTPError):
-        api.get_object(OBJECT_ID)
+        api.get_object(object_id)
