@@ -31,3 +31,28 @@ def init_db(db_path: str) -> sqlite3.Connection:
     cur.execute(creation_statement)
     conn.commit()
     return conn
+
+def add_artwork(conn: sqlite3.Connection, object: dict) -> None:
+    insert_statement = f"""INSERT INTO artworks
+    VALUES (
+        {object['objectID']},
+        "{object['title']}",
+        {object['isPublicDomain']},
+        "{object['objectName']}",
+        "{object['medium']}",
+        "{object['culture']}",
+        "{object['period']}",
+        "{object['dynasty']}",
+        "{object['classification']}",
+        "{object['department']}",
+        "{object['objectDate']}",
+        "{object['artistDisplayName']}",
+        "{object['artistGender']}",
+        "{object['artistNationality']}",
+        "{object['primaryImage']}"
+    );
+    """
+
+    cur = conn.cursor()
+    cur.execute(insert_statement)
+    conn.commit()
