@@ -8,6 +8,26 @@ Supports the following functions:
 3) Allows for creation, reading, update, and deletion of records
 """
 
-def init_db(db_path):
+def init_db(db_path: str) -> sqlite3.Connection:
+    creation_statement = """CREATE TABLE IF NOT EXISTS artworks (
+        object_id INTEGER PRIMARY KEY,
+        title TEXT,
+        is_public_domain BOOLEAN,
+        object_name TEXT,
+        medium TEXT,
+        culture TEXT,
+        period TEXT,
+        dynasty TEXT,
+        classification TEXT,
+        department TEXT,
+        object_date TEXT,
+        artist_display_name TEXT,
+        artist_gender TEXT,
+        artist_nationality TEXT,
+        primary_image TEXT
+    );"""
     conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute(creation_statement)
+    conn.commit()
     return conn
