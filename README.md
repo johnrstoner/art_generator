@@ -9,5 +9,3 @@ All artists born in a certain year, alive during a range of years
 All artwork made during a certain year, all artwork made during a range of years
 All artwork based on artist nationality
 All artwork based on a type of art i.e. impressionism or a set of types with weights that make the generated work more like one type or another
-
-TODO: refactor tests/test_api.py to reduce reused code
