@@ -33,7 +33,7 @@ def init_db(db_path: str) -> sqlite3.Connection:
     return conn
 
 def add_artwork(conn: sqlite3.Connection, object: dict) -> None:
-    insert_statement = f"""INSERT INTO artworks
+    insert_statement = f"""INSERT OR REPLACE INTO artworks
     VALUES (
         {object['objectID']},
         "{object['title']}",

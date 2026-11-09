@@ -45,3 +45,11 @@ def test_add_artwork_adds_row(conn: sqlite3.Connection):
     assert rows[0][0] == sample_object["objectID"]
     assert rows[0][1] == sample_object["title"]
 
+def test_add_artwork_twice_keeps_one_row(conn: sqlite3.Connection):
+    with open(DATA_DIR / f"object_{OBJECT_ID}.json") as file:
+        sample_object = json.load(file)
+    db.add_artwork(conn, sample_object)
+    db.add_artwork(conn, sample_object)
+
+    count = conn.execute("SELECT COUNT(*) FROM artworks").fetchone()[0]
+    assert count == 1
