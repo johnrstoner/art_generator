@@ -67,3 +67,32 @@ def test_get_object_raises_on_http_error(monkeypatch, object_id: int):
 
     with pytest.raises(requests.HTTPError):
         api.get_object(object_id)
+
+def test_search_returns_ids(monkeypatch, search_query: str):
+    mock_ids = [1, 2, 3]
+    
+    class MockResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"total": 3, "objectIDs": mock_ids}
+
+    def mock_get(*args, **kwargs):
+            return MockResponse()
+
+    monkeypatch.setattr(requests, "get", mock_get)
+    assert api.search(search_query) == [1, 2, 3]
+
+def test_search_raises_on_http_error(monkeypatch, search_query: str):
+    class ErrorResponse:
+            def raise_for_status(self):
+                raise requests.HTTPError("HTTP Error")
+    
+    def mock_get(*args, **kwargs):
+        return ErrorResponse()
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+    with pytest.raises(requests.HTTPError):
+        api.search(search_query)
