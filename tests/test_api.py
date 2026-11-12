@@ -20,13 +20,9 @@ def test_get_object_ids_returns_ids(monkeypatch):
 
     assert api.get_object_ids() == mock_ids
 
-def test_get_object_ids_raises_on_http_error(monkeypatch):
-    class ErrorResponse:
-        def raise_for_status(self):
-            raise requests.HTTPError("HTTP Error")
-
+def test_get_object_ids_raises_on_http_error(monkeypatch, error_response):
     def mock_get(*args, **kwargs):
-        return ErrorResponse()
+        return error_response()
 
     monkeypatch.setattr(requests, "get", mock_get)
 
@@ -55,13 +51,10 @@ def test_get_object_returns_object(monkeypatch, sample_object: dict, object_id: 
     assert obj["artistDisplayName"] == "James Barton Longacre"
     assert obj["objectDate"] == "1853"
 
-def test_get_object_raises_on_http_error(monkeypatch, object_id: int):
-    class ErrorResponse:
-            def raise_for_status(self):
-                raise requests.HTTPError("HTTP Error")
+def test_get_object_raises_on_http_error(monkeypatch, error_response, object_id: int):
     
     def mock_get(*args, **kwargs):
-        return ErrorResponse()
+        return error_response()
 
     monkeypatch.setattr(requests, "get", mock_get)
 
@@ -84,13 +77,10 @@ def test_search_returns_ids(monkeypatch, search_query: str):
     monkeypatch.setattr(requests, "get", mock_get)
     assert api.search(search_query) == [1, 2, 3]
 
-def test_search_raises_on_http_error(monkeypatch, search_query: str):
-    class ErrorResponse:
-            def raise_for_status(self):
-                raise requests.HTTPError("HTTP Error")
+def test_search_raises_on_http_error(monkeypatch, error_response, search_query: str):
     
     def mock_get(*args, **kwargs):
-        return ErrorResponse()
+        return error_response()
 
     monkeypatch.setattr(requests, "get", mock_get)
 

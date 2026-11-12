@@ -2,8 +2,16 @@ import json
 from pathlib import Path
 
 import pytest
+import requests
 
 DATA_DIR = Path(__file__).parent / "data"
+
+@pytest.fixture
+def error_response():
+    class ErrorResponse:
+        def raise_for_status(self):
+            raise requests.HTTPError("HTTP Error")
+    return ErrorResponse
 
 @pytest.fixture
 def object_id():
