@@ -17,4 +17,8 @@ def get_object(id: int) -> dict:
     response.raise_for_status()
     return response.json()
 
-
+def search(q: str) -> list[int]:
+    # Searches using the query passed
+    response = requests.get(f"{BASE_URL}.1/search?q={q}")
+    response.raise_for_status()
+    return response.json()["objectIDs"]
