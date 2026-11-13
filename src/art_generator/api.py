@@ -17,7 +17,7 @@ def get_object_ids() -> list[int]:
 
 def get_object(object_id: int) -> dict:
     # Fetches a work based on its id. Can fetch non-publicly available artwork, check the 'isPublicDomain' (bool) field of the returned dictionary
-    response = requests.get(f"{BASE_URL}/objects/{id}", timeout=REQUEST_TIMEOUT)
+    response = requests.get(f"{BASE_URL}/objects/{object_id}", timeout=REQUEST_TIMEOUT)
     if response.status_code == 404:
         raise ArtworkNotFound(object_id)
     response.raise_for_status()
