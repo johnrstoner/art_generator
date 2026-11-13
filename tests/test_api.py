@@ -21,17 +21,10 @@ def test_get_object_ids_raises_on_http_error(monkeypatch, error_response):
     with pytest.raises(requests.HTTPError):
         api.get_object_ids()
 
-def test_get_object_returns_object(monkeypatch, sample_object: dict, object_id: int):
-
-    class MockResponse:
-        def raise_for_status(self):
-            pass
-
-        def json(self):
-            return sample_object
+def test_get_object_returns_object(monkeypatch, mock_response_sample_object, object_id: int):
 
     def mock_get(*args, **kwargs):
-        return MockResponse()
+        return mock_response_sample_object()
 
     monkeypatch.setattr(requests, "get", mock_get)
 
