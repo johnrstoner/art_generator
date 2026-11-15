@@ -29,14 +29,31 @@ def object_id():
     return 1
 
 @pytest.fixture
-def mock_ids_payload():
-    return {"objectIDs": [1, 2, 3]}
+def object_ids_list():
+    return [1, 2, 3]
+
+@pytest.fixture
+def mock_ids_payload(object_ids_list):
+    return {"objectIDs": object_ids_list}
 
 @pytest.fixture
 def search_query():
     return "sunflowers"
 
 @pytest.fixture
-def sample_object(object_id):
-    with open(DATA_DIR / f"object_{object_id}.json") as f:
-        return json.load(f)
+def get_sample_object():
+    def _get(object_id):
+        with open(DATA_DIR / f"object_{object_id}.json") as f:
+            return json.load(f)
+    return _get
+
+@pytest.fixture
+def sample_object(get_sample_object, object_id):
+    return get_sample_object(object_id)
+
+@pytest.fixture
+def sample_object_list(get_sample_object, object_ids_list):
+    sample_objects = []
+    for object_id in object_ids_list:
+        sample_objects.append(get_sample_object(object_id))
+    return sample_objects
