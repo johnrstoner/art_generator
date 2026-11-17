@@ -3,6 +3,34 @@ import requests
 import art_generator.api as api
 
 
+def test_first_call_does_not_sleep(clock, limited):
+    limited()
+    assert clock.sleeps == []
+
+
+def test_immediate_second_call_sleeps_one_interval(clock, limited):
+    limited()
+    limited()
+    assert clock.sleeps == [pytest.approx(api.MIN_INTERVAL)]
+
+
+def test_call_after_interval_does_not_sleep(clock, limited):
+    limited()
+    clock.now += api.MIN_INTERVAL * 2
+    limited()
+    assert clock.sleeps == []
+
+
+def test_partial_wait_sleeps_only_the_remainder(clock, limited):
+    limited()
+    clock.now += api.MIN_INTERVAL / 2
+    limited()
+    assert clock.sleeps == [pytest.approx(api.MIN_INTERVAL / 2)]
+
+
+def test_wrapper_passes_arguments_and_return_value(clock, limited):
+    assert limited(42) == 42
+
 def test_get_object_ids_returns_ids(monkeypatch, mock_ids_payload, make_response):
     def mock_get(*args, **kwargs):
         return make_response(mock_ids_payload, 200)

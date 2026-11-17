@@ -4,7 +4,40 @@ from pathlib import Path
 import pytest
 import requests
 
+import art_generator.api as api
+
 DATA_DIR = Path(__file__).parent / "data"
+
+@pytest.fixture
+def limited():
+    @api.rate_limited
+    def f(x=0):
+        return x
+    return f
+
+@pytest.fixture(autouse=True)
+def no_sleep(monkeypatch):
+    monkeypatch.setattr(api.time, "sleep", lambda seconds: None)
+
+@pytest.fixture
+def clock(monkeypatch):
+    class Clock:
+        def __init__(self):
+            self.now = 1000.0
+            self.sleeps = []
+
+        def monotonic(self):
+            return self.now
+
+        def sleep(self, seconds):
+            self.sleeps.append(seconds)
+            self.now += seconds
+
+    c = Clock()
+    monkeypatch.setattr(api.time, "monotonic", c.monotonic)
+    monkeypatch.setattr(api.time, "sleep", c.sleep)
+    monkeypatch.setattr(api, "_last_call", 0.0)  # reset module state for each test
+    return c
 
 class FakeResponse:
     def __init__(self, payload=None, status_code=200):
