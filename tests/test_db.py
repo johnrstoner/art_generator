@@ -1,14 +1,6 @@
 import sqlite3
 
-import pytest
-
 from art_generator import db
-
-@pytest.fixture
-def conn():
-    connection = db.init_db(":memory:")
-    yield connection
-    connection.close()
 
 
 def test_init_db_creates_artworks_table(conn: sqlite3.Connection):

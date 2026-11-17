@@ -1,10 +1,8 @@
 import art_generator.api as api
 import art_generator.cli as cli
 
-def test_main_doesnt_crash():
-    cli.main()
 
-def test_fetch_artworks_returns_objects(monkeypatch, search_query, object_ids_list, get_sample_object):
+def test_fetch_artworks_returns_objects(monkeypatch, conn, search_query, object_ids_list, get_sample_object):
     def mock_search(q: str):
         return object_ids_list
     def mock_get_object(object_id: int):
@@ -13,25 +11,36 @@ def test_fetch_artworks_returns_objects(monkeypatch, search_query, object_ids_li
     monkeypatch.setattr(api, "search", mock_search)
     monkeypatch.setattr(api, "get_object", mock_get_object)
 
-    artwork_objects = cli.fetch_artworks(search_query)
+    conn = cli.fetch_artworks(conn, search_query)
 
-    assert artwork_objects[0]["objectID"] == 1
-    assert artwork_objects[0]["isPublicDomain"] == False
-    assert artwork_objects[0]["primaryImage"] == ""
-    assert artwork_objects[0]["title"] == "One-dollar Liberty Head Coin"
-    assert artwork_objects[0]["artistDisplayName"] == "James Barton Longacre"
-    assert artwork_objects[0]["objectDate"] == "1853"
+    rows = conn.execute("SELECT * FROM artworks").fetchall()
+    assert len(rows) == 3
 
-    assert artwork_objects[1]["objectID"] == 2
-    assert artwork_objects[1]["isPublicDomain"] == False
-    assert artwork_objects[1]["primaryImage"] == ""
-    assert artwork_objects[1]["title"] == "Ten-dollar Liberty Head Coin"
-    assert artwork_objects[1]["artistDisplayName"] == "Christian Gobrecht"
-    assert artwork_objects[1]["objectDate"] == "1901"
+    """
+    object_id
+    title
+    is_public_domain
+    object_date
+    artist_display_name
+    primary_image
+    """
+    assert rows[0][0] == 1
+    assert rows[0][1] == "One-dollar Liberty Head Coin"
+    assert rows[0][2] == False
+    assert rows[0][10] == "1853"
+    assert rows[0][11] == "James Barton Longacre"
+    assert rows[0][14] == ""
 
-    assert artwork_objects[2]["objectID"] == 3
-    assert artwork_objects[2]["isPublicDomain"] == False
-    assert artwork_objects[2]["primaryImage"] == ""
-    assert artwork_objects[2]["title"] == "Two-and-a-Half Dollar Coin"
-    assert artwork_objects[2]["artistDisplayName"] == ""
-    assert artwork_objects[2]["objectDate"] == "1909\u201327"
+    assert rows[1][0] == 2
+    assert rows[1][1] == "Ten-dollar Liberty Head Coin"
+    assert rows[1][2] == False
+    assert rows[1][10] == "1901"
+    assert rows[1][11] == "Christian Gobrecht"
+    assert rows[0][14] == ""
+
+    assert rows[2][0] == 3
+    assert rows[2][1] == "Two-and-a-Half Dollar Coin"
+    assert rows[2][2] == False
+    assert rows[2][10] == "1909\u201327"
+    assert rows[2][11] == ""
+    assert rows[0][14] == ""

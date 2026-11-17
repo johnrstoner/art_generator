@@ -8,6 +8,31 @@ Supports the following functions:
 3) Allows for creation, reading, update, and deletion of records
 """
 
+COLUMNS = (
+    "object_id", "title", "is_public_domain", "object_name", "medium",
+    "culture", "period", "dynasty", "classification", "department",
+    "object_date", "artist_display_name", "artist_gender",
+    "artist_nationality", "primary_image",
+)
+
+FIELD_MAP = {
+    "object_id": "objectID",
+    "title": "title",
+    "is_public_domain": "isPublicDomain",
+    "object_name": "objectName",
+    "medium": "medium",
+    "culture": "culture",
+    "period": "period",
+    "dynasty": "dynasty",
+    "classification": "classification",
+    "department": "department",
+    "object_date": "objectDate",
+    "artist_display_name": "artistDisplayName",
+    "artist_gender": "artistGender",
+    "artist_nationality": "artistNationality",
+    "primary_image": "primaryImage"    
+}
+
 def init_db(db_path: str) -> sqlite3.Connection:
     creation_statement = """CREATE TABLE IF NOT EXISTS artworks (
         object_id INTEGER PRIMARY KEY,
@@ -33,26 +58,14 @@ def init_db(db_path: str) -> sqlite3.Connection:
     return conn
 
 def add_artwork(conn: sqlite3.Connection, object: dict) -> None:
-    insert_statement = f"""INSERT OR REPLACE INTO artworks
-    VALUES (
-        {object['objectID']},
-        "{object['title']}",
-        {object['isPublicDomain']},
-        "{object['objectName']}",
-        "{object['medium']}",
-        "{object['culture']}",
-        "{object['period']}",
-        "{object['dynasty']}",
-        "{object['classification']}",
-        "{object['department']}",
-        "{object['objectDate']}",
-        "{object['artistDisplayName']}",
-        "{object['artistGender']}",
-        "{object['artistNationality']}",
-        "{object['primaryImage']}"
-    );
-    """
+
+    insert_statement = (
+        f"INSERT OR REPLACE INTO artworks ({', '.join(COLUMNS)}) "
+        f"VALUES ({', '.join('?' * len(COLUMNS))})"
+    )
+
+    values = tuple(object.get(FIELD_MAP[col]) for col in COLUMNS)
 
     cur = conn.cursor()
-    cur.execute(insert_statement)
+    cur.execute(insert_statement, values)
     conn.commit()

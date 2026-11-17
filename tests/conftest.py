@@ -5,6 +5,7 @@ import pytest
 import requests
 
 import art_generator.api as api
+import art_generator.db as db
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -38,6 +39,12 @@ def clock(monkeypatch):
     monkeypatch.setattr(api.time, "sleep", c.sleep)
     monkeypatch.setattr(api, "_last_call", 0.0)  # reset module state for each test
     return c
+
+@pytest.fixture
+def conn():
+    connection = db.init_db(":memory:")
+    yield connection
+    connection.close()
 
 class FakeResponse:
     def __init__(self, payload=None, status_code=200):
