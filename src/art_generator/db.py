@@ -69,3 +69,8 @@ def add_artwork(conn: sqlite3.Connection, object: dict) -> None:
     cur = conn.cursor()
     cur.execute(insert_statement, values)
     conn.commit()
+
+def list_artworks(conn: sqlite3.Connection):
+    cur = conn.cursor()
+    rows = cur.execute("SELECT * FROM artworks").fetchall()
+    return rows

@@ -19,12 +19,13 @@ def fetch_artworks(conn: sqlite3.Connection, q: str):
         db.add_artwork(conn, artwork_object)
 
     return conn
+
     
 def main():
     query = "sunflowers"
     conn = db.init_db(DEFAULT_DB)
     conn = fetch_artworks(conn, query)
-    rows = conn.execute("SELECT * FROM artworks").fetchall()
+    rows = db.list_artworks(conn)
     print(rows)
     conn.close()
     
